@@ -1,0 +1,32 @@
+{
+  "name": "genotype",
+  "version": "1.0.0",
+  "description": "functions for manipulating genotypes and genotype likelihoods",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ekg/genotype.git"
+  },
+  "keywords": [
+    "genotype",
+    "genotypes",
+    "likelihoods",
+    "DNA",
+    "sequencing",
+    "biology"
+  ],
+  "author": "Erik Garrison",
+  "license": "MIT",
+  "dependencies": {
+    "multichoose": "^1.0.3",
+    "multinomial-pmf": "0.0.2"
+  },
+  "bugs": {
+    "url": "https://github.com/ekg/genotype/issues"
+  },
+  "homepage": "https://github.com/ekg/genotype",
+  "devDependencies": {}
+}

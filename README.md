@@ -1,6 +1,6 @@
 # genotype
 
-a library of functions for exploring genotypes and genotype likelihoods
+functions for manipulating genotypes and genotype likelihoods
 
 ## Overview
 

@@ -1,5 +1,7 @@
 # genotype
 
+[![NPM](https://nodei.co/npm/genotype.png?global=true)](https://nodei.co/npm/genotype/)
+
 functions for manipulating genotypes and genotype likelihoods
 
 ## Overview

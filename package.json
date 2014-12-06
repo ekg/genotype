@@ -21,6 +21,7 @@
   "author": "Erik Garrison",
   "license": "MIT",
   "dependencies": {
+    "array-sample": "^0.1.0",
     "multichoose": "^1.0.3",
     "multinomial-pmf": "0.0.2"
   },

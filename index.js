@@ -1,5 +1,6 @@
 var multinomialPmf = require('multinomial-pmf')
 var multichoose = require('multichoose')
+var Phred = require('phred')
 
 function Genotype(a) {
   this.alleles = a.sort()
@@ -33,7 +34,7 @@ Genotype.prototype.alleleProbs = function() {
 }
 
 Genotype.prototype.orderedObservationCounts = function(observations) {
-  var obsCount = byAlleleObservationCount(observations)
+  var obsCount = byAlleleObservationCount(this.alleles, observations)
   var counts = []
   return Object.keys(this.alleleCount).map(function(a) {
     return obsCount[a]
@@ -43,33 +44,40 @@ Genotype.prototype.orderedObservationCounts = function(observations) {
 // an allele and a quality, which is assumed to be log-space p(err) (e.g. phred format)
 function Observation(allele, quality) {
   this.allele = allele
-  this.quality = phred2log10(quality)
+  this.quality = new Phred().fromQuality(quality)
+  this.error = undefined
 }
 
-function byAlleleObservationCount(observations) {
-  var count = {}
+Observation.prototype.induceQualityDependentError = function(alternateAllele) {
+  if (Math.random() < this.quality.toProb()) {
+    this.allele = alternateAllele
+    this.error = true
+  } else {
+    this.error = false
+  }
+  return this
+}
+
+function byAlleleObservationCount(alleles, observations) {
+  var counts = {}
+  alleles.forEach(function(a) { counts[a] = 0 })
   observations.forEach(function(obs) {
-    if (isNaN(count[obs.allele])) count[obs.allele] = 1
-    else count[obs.allele] += 1
+    counts[obs.allele] += 1
   })
-  return count
+  return counts
 }
 
-function byAlleleObservationQsum(observations) {
+function byAlleleObservationQsum(alleles, observations) {
   var qsums = {}
+  alleles.forEach(function(a) { qsums[a] = 0 })
   observations.forEach(function(obs) {
-    if (isNaN(qsums[obs.allele])) qsums[obs.allele] = obs.quality
-    else qsums[obs.allele] += 1
+    qsums[obs.allele] += obs.quality.toLog10Prob()
   })
   return qsums
 }
 
 function log10(val) {
   return Math.log(val) / Math.LN10;
-}
-
-function phred2log10(qual) {
-  return Math.LN10 * qual * -.1;
 }
 
 Genotype.prototype.samplingProbLog10 = function(observations) {
@@ -84,15 +92,16 @@ Genotype.prototype.orderedSamplingProbLog10 = function(observations) {
   var obsc = this.orderedObservationCounts(observations)
   var lnprob = 0
   for (var i = 0; i < probs.length; ++i) {
-    lnprob += log10(probs[i]) * log10(obsc[i])
+    if (obsc[i] > 0) {
+      lnprob += log10(probs[i]) * log10(obsc[i])
+    }
   }
   return lnprob
 }
 
-Genotype.prototype.likelihood = function(observations) {
-  
-  var count = byAlleleObservationCount(observations)
-  var qsums = byAlleleObservationQsum(observations)
+Genotype.prototype.likelihood = function(alleles, observations) {
+  var count = byAlleleObservationCount(alleles, observations)
+  var qsums = byAlleleObservationQsum(alleles, observations)
   var qsumOut = 0
   var that = this
   Object.keys(qsums).forEach(function(a) {
@@ -107,10 +116,10 @@ Genotype.prototype.likelihood = function(observations) {
   }
 }
 
-Genotype.prototype.samtoolsLikelihood = function(observations) {
+Genotype.prototype.samtoolsLikelihood = function(alleles, observations) {
   
-  var count = byAlleleObservationCount(observations)
-  var qsums = byAlleleObservationQsum(observations)
+  var count = byAlleleObservationCount(alleles, observations)
+  var qsums = byAlleleObservationQsum(alleles, observations)
   var qsumOut = 0
   var that = this
   Object.keys(qsums).forEach(function(a) {

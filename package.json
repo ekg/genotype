@@ -23,7 +23,8 @@
   "dependencies": {
     "array-sample": "^0.1.0",
     "multichoose": "^1.0.3",
-    "multinomial-pmf": "0.0.2"
+    "multinomial-pmf": "0.0.2",
+    "phred": "^1.0.1"
   },
   "bugs": {
     "url": "https://github.com/ekg/genotype/issues"

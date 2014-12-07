@@ -110,8 +110,8 @@ range(0,reps).forEach(function() {
   var qualities = range(1,30)
   for (var i = 0; i < 10; ++i) qualities.push(30)
   var genotype = new Genotype(alleles.sample(2))
-  var numObservations = Math.floor(Math.random() * coverageFactor)
-  if (numObservations < 2) numObservations = 2
+  var numObservations = Math.round(Math.random() * coverageFactor)
+  while (numObservations < 2) numObservations = Math.round(Math.random() * coverageFactor)
   var obsQualities = qualities.sample(numObservations) 
   var alleleObservations = genotype.alleles.sample(numObservations)
   var observations = []

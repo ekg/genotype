@@ -1,4 +1,5 @@
 var multinomialPmf = require('multinomial-pmf')
+var multinomialPmfLn = require('multinomial-pmf').log
 var multichoose = require('multichoose')
 var Phred = require('phred')
 
@@ -77,12 +78,16 @@ function byAlleleObservationQsum(alleles, observations) {
 }
 
 function log10(val) {
-  return Math.log(val) / Math.LN10;
+  return Math.log(val) / Math.LN10
+}
+
+function ln2log10(val) {
+  return val / Math.LOG10E
 }
 
 Genotype.prototype.samplingProbLog10 = function(observations) {
-  return log10(
-    multinomialPmf(
+  return ln2log10(
+    multinomialPmfLn(
       this.alleleProbs(),
       this.orderedObservationCounts(observations)))
 }
@@ -93,7 +98,7 @@ Genotype.prototype.orderedSamplingProbLog10 = function(observations) {
   var lnprob = 0
   for (var i = 0; i < probs.length; ++i) {
     if (obsc[i] > 0) {
-      lnprob += log10(probs[i]) * log10(obsc[i])
+      lnprob += log10(probs[i]) * obsc[i]
     }
   }
   return lnprob

@@ -1,6 +1,6 @@
 {
   "name": "genotype",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "functions for manipulating genotypes and genotype likelihoods",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "array-sample": "^0.1.0",
     "multichoose": "^1.0.3",
-    "multinomial-pmf": "0.0.2",
+    "multinomial-pmf": "^1.0.1",
     "phred": "^1.0.1"
   },
   "bugs": {

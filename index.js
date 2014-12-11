@@ -2,6 +2,7 @@ var multinomialPmf = require('multinomial-pmf')
 var multinomialPmfLn = require('multinomial-pmf').log
 var multichoose = require('multichoose')
 var Phred = require('phred')
+Array.prototype.sample = require('array-sample')
 
 function Genotype(a) {
   this.alleles = a.sort()
@@ -51,7 +52,9 @@ function Observation(allele, quality) {
 
 Observation.prototype.induceQualityDependentError = function(alternateAllele) {
   if (Math.random() < this.quality.toProb()) {
-    this.allele = alternateAllele
+    //this.allele = alternateAllele
+    // make a random allele, not just 0/1
+    this.allele = [0,1,2,3].sample(1)
     this.error = true
   } else {
     this.error = false
@@ -82,7 +85,7 @@ function log10(val) {
 }
 
 function ln2log10(val) {
-  return val / Math.LOG10E
+  return val * Math.LOG10E
 }
 
 Genotype.prototype.samplingProbLog10 = function(observations) {
@@ -136,6 +139,24 @@ Genotype.prototype.samtoolsLikelihood = function(alleles, observations) {
     return qsumOut
   } else {
     return this.orderedSamplingProbLog10(observations) + qsumOut
+  }
+}
+
+Genotype.prototype.hetDownweightLikelihood = function(alleles, observations, weight) {
+  
+  var count = byAlleleObservationCount(alleles, observations)
+  var qsums = byAlleleObservationQsum(alleles, observations)
+  var qsumOut = 0
+  var that = this
+  Object.keys(qsums).forEach(function(a) {
+    if (!that.hasAllele(a)) {
+      qsumOut += qsums[a]
+    }
+  })
+  if (this.homozygous) {
+    return qsumOut
+  } else {
+    return this.orderedSamplingProbLog10(observations) * weight + qsumOut
   }
 }
 

@@ -107,6 +107,7 @@ range(0,reps).forEach(function() {
   var result = {}
   var ploidy = 2
   var alleles = [0, 1]
+  var possibleAlleles = [0, 1, 2, 3]
   var qualities = range(1,30)
   for (var i = 0; i < 10; ++i) qualities.push(30)
   var genotype = new Genotype(alleles.sample(2))
@@ -137,7 +138,8 @@ range(0,reps).forEach(function() {
     }
   }
   var genotypes = allGenotypesOfPloidy(ploidy, alleles)
-  console.log(formatTestResult('freebayes', genotypes, genotype, genotypeIndex, observations, freebayesLikelihoods(genotypes, alleles, observations)))
-  console.log(formatTestResult('samtools', genotypes, genotype, genotypeIndex, observations, samtoolsLikelihoods(genotypes, alleles, observations)))
+  console.log(formatTestResult('freebayes', genotypes, genotype, genotypeIndex, observations, freebayesLikelihoods(genotypes, possibleAlleles, observations)))
+  console.log(formatTestResult('samtools', genotypes, genotype, genotypeIndex, observations, samtoolsLikelihoods(genotypes, possibleAlleles, observations)))
+  console.log(formatTestResult('hetdown', genotypes, genotype, genotypeIndex, observations, hetDownweightLikelihoods(genotypes, possibleAlleles, observations)))
 })
 
